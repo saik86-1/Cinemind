@@ -22,9 +22,6 @@ st.set_page_config(
     layout="centered",
 )
 
-inject_styles()
-
-
 def init_state():
     defaults = {
         "step": "preference_type",
@@ -78,7 +75,7 @@ def run_agent(pref_type: str, pref_value: str) -> tuple[list[dict], list[str]]:
     if gem:
         reasoning.append(
             f"Identified hidden gem: <strong>{gem['title']}</strong> "
-            f"(rating {gem['vote_average']}, popularity {gem.get('popularity', '?'):.1f})"
+            f"(rating {gem['vote_average']}, popularity {gem.get('popularity', 0.0):.1f})"
         )
     else:
         reasoning.append("No hidden gem found in this result set — showing top-rated picks")
@@ -100,6 +97,7 @@ def run_agent(pref_type: str, pref_value: str) -> tuple[list[dict], list[str]]:
 
 def main():
     init_state()
+    inject_styles()
     render_logo()
 
     if st.session_state.step == "preference_type":
@@ -123,10 +121,14 @@ def main():
 
     elif st.session_state.step == "loading":
         with st.spinner("CineMind is thinking..."):
-            results, reasoning = run_agent(
-                st.session_state.pref_type,
-                st.session_state.pref_value,
-            )
+            try:
+                results, reasoning = run_agent(
+                    st.session_state.pref_type,
+                    st.session_state.pref_value,
+                )
+            except Exception as e:
+                results = []
+                reasoning = [f"Something went wrong: {e}"]
             st.session_state.results = results
             st.session_state.reasoning = reasoning
             st.session_state.step = "results"
