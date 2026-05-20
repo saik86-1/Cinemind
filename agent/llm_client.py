@@ -1,4 +1,5 @@
 import os
+import re
 import json
 from groq import Groq
 from dotenv import load_dotenv
@@ -51,10 +52,11 @@ def rank_and_explain(
 
     raw = response.choices[0].message.content.strip()
 
-    # Strip markdown code fences if the LLM added them
-    if raw.startswith("```"):
-        raw = raw.split("```")[1]
-        if raw.startswith("json"):
-            raw = raw[4:]
+    # Strip markdown code fences robustly
+    raw = re.sub(r"```(?:json)?\s*", "", raw).strip()
 
-    return json.loads(raw)
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        # LLM returned malformed JSON — return empty list so the app degrades gracefully
+        return []
