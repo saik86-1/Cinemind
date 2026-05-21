@@ -1,4 +1,13 @@
-from .tmdb_client import GENRE_IDS
+GENRE_IDS = {
+    "Action": 28,
+    "Comedy": 35,
+    "Documentary": 99,
+    "Drama": 18,
+    "Horror": 27,
+    "Romance": 10749,
+    "Sci-Fi": 878,
+    "Thriller": 53,
+}
 
 PREFERENCE_TYPES = [
     "Genre",
