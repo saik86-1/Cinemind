@@ -1,4 +1,4 @@
-from agent.tmdb_client import GENRE_IDS
+from .tmdb_client import GENRE_IDS
 
 PREFERENCE_TYPES = [
     "Genre",
